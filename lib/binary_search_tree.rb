@@ -59,8 +59,7 @@ class BinarySearchTree
   end
 
   def depth(tree_node = @root)
-    return 0 if tree_node.nil?
-    return 0 if no_children?(tree_node)
+    return 0 if tree_node.nil? || no_children?(tree_node)
 
     tree_node.left ? left_depth = depth(tree_node.left) : left_depth = 0
     tree_node.right ? right_depth = depth(tree_node.right) : right_depth = 0
@@ -76,6 +75,13 @@ class BinarySearchTree
   end
 
   def in_order_traversal(tree_node = @root, arr = [])
+    return arr if tree_node.nil?
+    return [tree_node.value] if no_children?(tree_node)
+
+    left_arr = in_order_traversal(tree_node.left)
+    right_arr = in_order_traversal(tree_node.right)
+
+    left_arr + [tree_node.value] + right_arr
   end
 
 
