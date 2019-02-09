@@ -28,15 +28,17 @@ class BinarySearchTree
   end
 
   def delete(value)
-    parent = find_parent(value)
-    
+    if @root.left.nil? && @root.right.nil?
+      @root = nil
+    else
+      delete_helper(@root, value)
+    end
   end
 
   # helper method for #delete:
   def maximum(tree_node = @root)
-    return tree_node if tree_node.left.nil? && tree_node.right.nil?
-
-    tree_node.right ? maximum(tree_node.right) : maximum(tree_node.left)
+    return tree_node if tree_node.right.nil?
+    maximum(tree_node.right)
   end
 
   def depth(tree_node = @root)
@@ -62,34 +64,29 @@ class BinarySearchTree
     tree_node
   end
 
-  def find_parent(value, tree_node = @root)
-    return nil if tree_node.left.nil? && tree_node.right.nil?
-    return tree_node if (tree_node.left == value || tree_node.right == value)
+  def delete_helper(tree_node, value)
+    return tree_node if tree_node.nil?
 
     if value > tree_node.value
-      return find_parent(value, tree_node.right)
+      tree_node.right = delete_helper(tree_node.right, value)
+    elsif value < tree_node.value
+      tree_node.left = delete_helper(tree_node.left, value)
     else
-      return find_parent(value, tree_node.left)
+      if tree_node.left.nil?
+        temp = tree_node.right
+        tree_node = nil 
+        return temp
+      elsif tree_node.right.nil?
+        temp = tree_node.left
+        tree_node = nil 
+        return temp
+      end
+
+      temp = maximum(tree_node.left)
+      tree_node.value = temp.value
+      tree_node.left = delete_helper(tree_node.left, temp.value)
     end
+    tree_node
   end
   
 end
-
-
-# if tree_node.nil?
-    #   tree_node = BSTNode.new(value) 
-    # else
-    #   if value > tree_node.value
-    #     if tree_node.right.nil?
-    #       return tree_node.right = BSTNode.new(value)
-    #     else
-    #       insert_helper(value, tree_node.right)
-    #     end
-    #   else
-    #     if tree_node.left.nil?
-    #       return tree_node.left = BSTNode.new(value)
-    #     else
-    #       insert_helper(value, tree_node.left)
-    #     end
-    #   end
-    # end
