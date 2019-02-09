@@ -9,104 +9,87 @@ class BinarySearchTree
   end
 
   def insert(value)
-    new_node = BSTNode.new(value)
     if @root.nil?
-      @root = new_node
+      @root = BSTNode.new(value) 
     else
-      parent = find_parent(value)
-
-      if value > parent.value
-        parent.right = new_node
-      else
-        parent.left = new_node
-      end
+      insert_helper(value, @root)
     end
-
-    new_node
   end
 
   def find(value, tree_node = @root)
     return nil if tree_node.nil?
     return tree_node if tree_node.value == value
-  
-    if value <= tree_node.value
-      return find(value, tree_node.left)
-    else
+
+    if value > tree_node.value
       return find(value, tree_node.right)
+    else
+      return find(value, tree_node.left)
     end
   end
 
   def delete(value)
-    # node = find(value)
-    # parent = find_parent(value)
-
-    # if no_children?(node)
-    #   value > parent.value ? parent.right = nil : parent.left = nil
-    # elsif one_child?(node)
-    #   node.left.nil? ? new_node = node.right : new_node = node.left
-    #   new_node.value > parent.value ? parent.right = new_node : parent.left = nil
-    # else
-    #   new_node = maximum(node)
-    # end
+    parent = find_parent(value)
     
-    # node
   end
 
   # helper method for #delete:
   def maximum(tree_node = @root)
-    return tree_node if tree_node.right.nil?
-    maximum(tree_node.right)
+    return tree_node if tree_node.left.nil? && tree_node.right.nil?
+
+    tree_node.right ? maximum(tree_node.right) : maximum(tree_node.left)
   end
 
   def depth(tree_node = @root)
-    return 0 if tree_node.nil? || no_children?(tree_node)
-
-    tree_node.left ? left_depth = depth(tree_node.left) : left_depth = 0
-    tree_node.right ? right_depth = depth(tree_node.right) : right_depth = 0
-
-    [left_depth, right_depth].max + 1
   end 
 
   def is_balanced?(tree_node = @root)
-    return true if tree_node.nil?
-    left, right = depth(tree_node.left), depth(tree_node.right)
-
-    ((left - right).abs <= 1) && is_balanced?(tree_node.left) && is_balanced?(tree_node.right)
   end
 
   def in_order_traversal(tree_node = @root, arr = [])
-    return arr if tree_node.nil?
-    return [tree_node.value] if no_children?(tree_node)
-
-    left_arr = in_order_traversal(tree_node.left)
-    right_arr = in_order_traversal(tree_node.right)
-
-    left_arr + [tree_node.value] + right_arr
   end
 
 
   private
   # optional helper methods go here:
 
-  def find_parent(value, tree_node = @root)
-    return tree_node if tree_node.left.nil? && value <= tree_node.value
-    return tree_node if tree_node.right.nil? && value > tree_node.value
-    node = nil 
+  def insert_helper(value, tree_node)
+    return BSTNode.new(value) if tree_node.nil?
     if value > tree_node.value
-      node = find_parent(value, tree_node.right)
+      tree_node.right = insert_helper(value, tree_node.right)
     else
-      node = find_parent(value, tree_node.left)
+      tree_node.left = insert_helper(value, tree_node.left)
     end
-
-    node
+    tree_node
   end
 
-  def no_children?(node)
-    node.left.nil? && node.right.nil?
-  end
+  def find_parent(value, tree_node = @root)
+    return nil if tree_node.left.nil? && tree_node.right.nil?
+    return tree_node if (tree_node.left == value || tree_node.right == value)
 
-  def one_child?(node)
-    (node.left.nil? && !!node.right) || (node.right.nil? && !!node.left)
+    if value > tree_node.value
+      return find_parent(value, tree_node.right)
+    else
+      return find_parent(value, tree_node.left)
+    end
   end
-
+  
 end
+
+
+# if tree_node.nil?
+    #   tree_node = BSTNode.new(value) 
+    # else
+    #   if value > tree_node.value
+    #     if tree_node.right.nil?
+    #       return tree_node.right = BSTNode.new(value)
+    #     else
+    #       insert_helper(value, tree_node.right)
+    #     end
+    #   else
+    #     if tree_node.left.nil?
+    #       return tree_node.left = BSTNode.new(value)
+    #     else
+    #       insert_helper(value, tree_node.left)
+    #     end
+    #   end
+    # end
